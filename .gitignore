@@ -1,0 +1,4 @@
+__pycache__/
+.env
+.flower_env
+db.sqlite3
