@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'api',
     'users',
+    'flowers',
+    'orders'
 ]
 
 MIDDLEWARE = [

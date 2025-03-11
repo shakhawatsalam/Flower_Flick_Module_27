@@ -1,8 +1,14 @@
 from rest_framework import serializers
-from .models import Flower
+from .models import Flower, Category
 
 class FlowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flower
         fields = '__all__'
-        read_only_fields = ['quantity'] 
+     
+        
+        
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'description']
