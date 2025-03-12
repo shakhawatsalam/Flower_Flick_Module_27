@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Cart, CartItem, Order, OrderItem
 from flowers.serializers import FlowerSerializer
 from flowers.models import Flower
+from orders.services  import OrderService
 
 
 class SimpleFlowerSerializer(serializers.ModelSerializer):
@@ -74,6 +75,46 @@ class CartSerializer(serializers.ModelSerializer):
     
     
 
+
+
+
+# ORDER SERIALIZERS
+class EmptyOrderSerializer(serializers.Serializer): 
+    pass
+
+
+
+
+class CreateOrderSerializer(serializers.Serializer):
+    cart_id = serializers.UUIDField()
+    
+    def validate_cart_id(self, cart_id):
+        if not Cart.objects.filter(pk=cart_id).exists():
+            raise serializers.ValidationError("No Cart Whit this Id")
+        
+        if not CartItem.objects.filter(cart_id=cart_id).exists():
+           raise serializers.ValidationError("Cart  Is Empty") 
+        return cart_id
+    
+    def create(self, validated_data):
+        user_id = self.context['user_id']
+        cart_id = validated_data['cart_id']
+        
+        try:
+         order = OrderService.create_order(user_id=user_id, cart_id=cart_id)
+         return order
+        except ValueError as e:
+            raise serializers.ValidationError(str(e))
+        
+        
+    def to_representation(self, instance):
+        return OrderSerializer(instance).data
+    
+    
+    
+    
+    
+    
 class OrderItemSerializer(serializers.ModelSerializer):
     flower = FlowerSerializer(read_only=True)
 
@@ -81,7 +122,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['id', 'flower', 'quantity', 'price', 'total_price']
         
-        
+class UpdateOrderSerialier(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['status']
+       
 
 class OrderSerializer(serializers.ModelSerializer):
     items =  OrderItemSerializer(many=True)

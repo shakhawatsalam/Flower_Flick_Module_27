@@ -43,9 +43,7 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id} by {self.user.first_name} - {self.status}"
     
-    def update_total_price(self):
-        self.total_price = sum(item.total_price for item in self.items.all())
-        self.save()
+   
         
 
 class OrderItem(models.Model):
@@ -56,4 +54,4 @@ class OrderItem(models.Model):
     total_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     
     def __str__(self):
-        return f"{self.quantity} X {self.product.name}"
+        return f"{self.quantity} X {self.flower.title}"

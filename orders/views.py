@@ -43,8 +43,45 @@ class CartItemViewSet(viewsets.ModelViewSet):
     
     
     
-        
-        
-        
+
+
+
+      
 class OrderViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','post', 'delete', 'patch', 'head', 'options']
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        order = self.get_object()
+        OrderService.cancel_order(order=order, user=request.user)
+        
+        return Response({'status': 'Order cancled'})
+    
+    @action(detail=True, methods=['patch'])
+    def update_status(self, request, pk=None):
+        order = self.get_object()
+        serializer = UpdateOrderSerialier(order, data=request.data, partial=True)
+        serializer.is_valid()
+        serializer.save()
+        return Response({'status': f'Order status updated to {request.data['status']}'})
+    
+    def get_serializer_class(self):
+        if self.action == 'cancel':
+            return serializers.EmptyOrderSerializer
+        if self.action  == 'create':
+            return serializers.CreateOrderSerializer
+        elif self.action  == 'update_status':
+            return serializers.UpdateOrderSerialier
+        return serializers.OrderSerializer
+    
+    def get_serializer_context(self):
+        if getattr(self,'swagger_fake_view',False):
+            return super().get_serializer_context()
+        return {'user_id': self.request.user.id, 'user': self.request.user}
+                                 
+    def get_queryset(self):
+        if getattr(self,'swagger_fake_view',False):
+            return Cart.objects.none()
+        if self.request.user.is_staff:
+            return Order.objects.prefetch_related('items__flower').all()
+        return Order.objects.prefetch_related('items__flower').filter(user=self.request.user)
