@@ -1,7 +1,8 @@
 from orders.models import Order, Cart, OrderItem
 from django.db import transaction
 from rest_framework.exceptions import PermissionDenied, ValidationError
-
+from django.conf import settings
+from django.core.mail import send_mail
 class OrderService:
     @staticmethod
     def create_order(user_id, cart_id):
@@ -26,6 +27,21 @@ class OrderService:
             ]
         
             OrderItem.objects.bulk_create(order_items)
+            
+            # Reduce flower quantities
+            for item in cart_items:
+                flower = item.flower
+                flower.quantity -= item.quantity
+                flower.save()
+
+            # Send order confirmation email
+            user_email = order.user.email
+            subject = 'Order Confirmation'
+            message = f'Thank you for your order! Your order ID is {order.id}.'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [user_email]
+
+            send_mail(subject, message, from_email, recipient_list)
           
             
             cart.delete()
@@ -42,7 +58,7 @@ class OrderService:
         if order.user != user:
             raise PermissionDenied({'detail': "You can only cancel your own order"})
 
-        if order.status == Order.DELIVERED:
+        if order.status == Order.COMPLETED:
             raise ValidationError({'detail': 'You can not cancel an order'})
         
         

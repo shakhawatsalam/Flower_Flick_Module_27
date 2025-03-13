@@ -24,6 +24,6 @@ class Flower(models.Model):
     
     
 class FlowerImage(models.Model):
-    product = models.ForeignKey(Flower,on_delete=models.CASCADE,related_name='images')
+    flower = models.ForeignKey(Flower,on_delete=models.CASCADE,related_name='images')
     image = models.ImageField(
-        upload_to="products/images/")
+        upload_to="flowers/images/")

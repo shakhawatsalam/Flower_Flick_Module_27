@@ -4,13 +4,15 @@ from .models import Cart, CartItem, Order, OrderItem
 from orders import serializers
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .serializers import  OrderService
 # Create your views here.
 
 
 class CartViewSet(viewsets.ModelViewSet):
-    # queryset =  Cart.objects.all()
+    queryset =  Cart.objects.all()
     serializer_class = serializers.CartSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -49,7 +51,6 @@ class CartItemViewSet(viewsets.ModelViewSet):
       
 class OrderViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','post', 'delete', 'patch', 'head', 'options']
-    
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         order = self.get_object()
@@ -60,10 +61,16 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
         order = self.get_object()
-        serializer = UpdateOrderSerialier(order, data=request.data, partial=True)
+        serializer = serializers.UpdateOrderSerialier(order, data=request.data, partial=True)
         serializer.is_valid()
         serializer.save()
         return Response({'status': f'Order status updated to {request.data['status']}'})
+    
+    
+    def get_permissions(self):
+        if self.action  in ['update_status', 'destroy']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
     
     def get_serializer_class(self):
         if self.action == 'cancel':
