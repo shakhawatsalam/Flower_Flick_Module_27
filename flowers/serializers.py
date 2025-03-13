@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Flower, Category, FlowerImage
 
 class FlowerImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
     class Meta:
         model = FlowerImage
         fields = ['id','image']       
