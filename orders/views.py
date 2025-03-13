@@ -191,10 +191,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         Determine the serializer class based on the action.
         """
-        if self.action == 'cancel':
-            return serializers.EmptyOrderSerializer
+        # if self.action == 'cancel':
+        #     return serializers.EmptyOrderSerializer
         if self.action == 'create':
             return serializers.CreateOrderSerializer
+        if self.action == 'update_status':
+            return serializers.UpdateOrderSerialier
         return serializers.OrderSerializer
 
     def get_serializer_context(self):
@@ -275,17 +277,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         return super().destroy(request, *args, **kwargs)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def cancel(self, request, pk=None):
-        """
-        Cancel an order.
+    # @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    # def cancel(self, request, pk=None):
+    #     """
+    #     Cancel an order.
 
-        This endpoint allows authenticated users to cancel a specific order identified by its ID.
+    #     This endpoint allows authenticated users to cancel a specific order identified by its ID.
 
-        """
-        order = self.get_object()
-        OrderService.cancel_order(order=order, user=request.user)
-        return Response({'status': 'Order canceled'})
+    #     """
+    #     order = self.get_object()
+    #     OrderService.cancel_order(order=order, user=request.user)
+    #     return Response({'status': 'Order canceled'})
 
     @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAuthenticated])
     def update_status(self, request, pk=None):
