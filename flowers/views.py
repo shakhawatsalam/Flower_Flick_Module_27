@@ -103,11 +103,7 @@ class FlowerImageViewSet(ModelViewSet):
 
         This endpoint allows authenticated users with admin privileges to create a new image for a specific flower identified by `flower_pk`.
 
-        Parameters:
-        - image (file): The image file to upload.
-
-        Returns:
-        - A JSON object representing the newly created image.
+        
         """
         return super().create(request, *args, **kwargs)
 
@@ -117,11 +113,7 @@ class FlowerImageViewSet(ModelViewSet):
 
         This endpoint allows authenticated users with admin privileges to update an existing image for a specific flower identified by `flower_pk` and `pk`.
 
-        Parameters:
-        - image (file, optional): The new image file to upload.
-
-        Returns:
-        - A JSON object representing the updated image.
+           
         """
         return super().update(request, *args, **kwargs)
 
@@ -131,11 +123,7 @@ class FlowerImageViewSet(ModelViewSet):
 
         This endpoint allows authenticated users with admin privileges to partially update an existing image for a specific flower identified by `flower_pk` and `pk`.
 
-        Parameters:
-        - image (file, optional): The new image file to upload.
-
-        Returns:
-        - A JSON object representing the partially updated image.
+       
         """
         return super().partial_update(request, *args, **kwargs)
 
@@ -145,8 +133,7 @@ class FlowerImageViewSet(ModelViewSet):
 
         This endpoint allows authenticated users with admin privileges to delete an image for a specific flower identified by `flower_pk` and `pk`.
 
-        Returns:
-        - A success message indicating that the image has been deleted.
+        
         """
         return super().destroy(request, *args, **kwargs) 
     
@@ -154,4 +141,65 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
+    
+    # views.py
+
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of all categories.
+
+        This endpoint returns a paginated list of all categories available in the store.
+        """
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a specific category by ID.
+
+        This endpoint returns details of a specific category identified by its ID.
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new category.
+        
+        This endpoint allows authenticated users with admin privileges to create a new category.
+        
+        """
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update an existing category.
+
+        This endpoint allows authenticated users with admin privileges to update an existing category.
+
+        """
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Partially update an existing category.
+
+        This endpoint allows authenticated users with admin privileges to partially update an existing category.
+        """
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Delete a category.
+
+        This endpoint allows authenticated users with admin privileges to delete a category.
+
+          
+        """
+        return super().destroy(request, *args, **kwargs)
     
