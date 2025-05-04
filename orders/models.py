@@ -22,7 +22,7 @@ class CartItem(models.Model):
         unique_together = [['cart', 'flower']]
     
     def __str__(self):
-        return f"{self.quantity} X {self.flower.name}"
+        return f"{self.quantity} X {self.flower.title}"
     
     
 class Order(models.Model):

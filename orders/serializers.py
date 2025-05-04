@@ -73,6 +73,13 @@ class CartSerializer(serializers.ModelSerializer):
     def get_total_price(self, obj):
         return sum([item.quantity * item.flower.price for item in obj.items.all()])
     
+    def to_representation(self, instance):
+        # Get the original representation
+        rep = super().to_representation(instance)
+        # Sort items by 'id'
+        rep['items'] = sorted(rep['items'], key=lambda item: item['id'])
+        return rep
+    
     
 
 

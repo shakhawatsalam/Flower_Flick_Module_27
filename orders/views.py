@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions
 from .models import Cart, CartItem, Order, OrderItem
 from orders import serializers
@@ -6,6 +6,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import  OrderService
+from rest_framework import status
+from rest_framework.decorators import api_view
+from django.conf import settings as main_settings
+from sslcommerz_lib import SSLCOMMERZ 
 # Create your views here.
 
 
@@ -56,6 +60,10 @@ class CartViewSet(viewsets.ModelViewSet):
 
       
         """
+        existing_cart = Cart.objects.filter(user=request.user).first()
+        if existing_cart:
+            serializers = self.get_serializer(existing_cart)
+            return Response(serializers.data, status= status.HTTP_200_OK)
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
@@ -88,7 +96,8 @@ class CartViewSet(viewsets.ModelViewSet):
     
 class CartItemViewSet(viewsets.ModelViewSet):
     http_method_names =['get','post', 'patch', 'delete']
-    queryset = CartItem.objects.all()
+    queryset = CartItem.objects.all().order_by("-quantity")
+ 
     
     def get_serializer_class(self):
         """
@@ -172,9 +181,6 @@ class CartItemViewSet(viewsets.ModelViewSet):
     
     
 
-
-
-      
 class OrderViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','post', 'delete', 'patch', 'head', 'options']
     permission_classes = [permissions.IsAuthenticated]
@@ -302,3 +308,55 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)  # Raise exception for validation errors
         serializer.save()
         return Response({'status': f'Order status updated to {request.data["status"]}'})
+
+
+
+
+@api_view(['POST'])
+def initiate_payment(request):
+    user = request.user
+    amount = request.data.get("amount")
+    order_id = request.data.get('orderId')
+   
+    settings = { 'store_id': 'flowe6810bec8ccd8a', 'store_pass': 'flowe6810bec8ccd8a@ssl', 'issandbox': True }
+    sslcz = SSLCOMMERZ(settings)
+    post_body = {}
+    post_body['total_amount'] = amount
+    post_body['currency'] = "BDT"
+    post_body['tran_id'] = f"trx_{order_id}"
+    post_body['success_url'] = f"{main_settings.BACKEND_URL}/api/v1/payment/success/"
+    post_body['fail_url'] =  "http://localhost:5173/payment-success"
+    post_body['cancel_url'] =  "http://localhost:5173/orders"
+    post_body['emi_option'] = 0
+    post_body['cus_name'] = f"{user.first_name} {user.last_name}"
+    post_body['cus_email'] = "test@test.com"
+    post_body['cus_phone'] = "01700000000"
+    post_body['cus_add1'] = "customer address"
+    post_body['cus_city'] = "Dhaka"
+    post_body['cus_country'] = "Bangladesh"
+    post_body['shipping_method'] = "NO"
+    post_body['multi_card_name'] = ""
+    post_body['num_of_item'] = 1
+    post_body['product_name'] = "Test"
+    post_body['product_category'] = "Test Category"
+    post_body['product_profile'] = "general"
+
+
+    response = sslcz.createSession(post_body) # API response
+    print(response)
+    
+    if response.get("status")== "SUCCESS":
+     return Response({"payment_url": response["GatewayPageURL"]})
+    return Response({"error": "Payment initiation failed"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(["POST"])
+def payment_success(request):
+    order_id = request.data.get("tran_id").split('_')[1]
+    order = Order.objects.get(id=order_id)
+    order.status = "Completed"
+    order.save()
+ 
+    return redirect(f"{main_settings.FRONTEND_URL}/payment-success/")
+    

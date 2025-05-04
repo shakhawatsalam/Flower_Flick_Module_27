@@ -6,4 +6,7 @@ from flowers.models import Flower
 class ProductFilter(FilterSet):
     class Meta:
         model = Flower
-        fields = ['category']
+        fields = {
+            'category_id': ['exact'],
+            'price': ['gt', 'lt']
+        }

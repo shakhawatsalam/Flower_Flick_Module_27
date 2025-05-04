@@ -1,18 +1,23 @@
-from django.shortcuts import render
+
 from rest_framework.viewsets  import ModelViewSet
 from flowers.models import Flower, Category, FlowerImage
 from flowers.serializers import FlowerSerializer, CategorySerializer, FlowerImageSerializer
 from flowers.permissions import IsAdminOrReadOnly
 from flowers.filters import  ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from flowers.paginations import DefaultPagination
+from rest_framework.filters import SearchFilter, OrderingFilter
 # Create your views here.
 
 class FlowerViewSet(ModelViewSet):
     queryset = Flower.objects.all()
     serializer_class = FlowerSerializer
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends=[DjangoFilterBackend]
+    filter_backends=[DjangoFilterBackend, SearchFilter, OrderingFilter]
+    pagination_class=DefaultPagination
     filterset_class = ProductFilter
+    search_fields = ['title', 'description']
+    ordering_fields = ['price']
     
     def list(self, request, *args, **kwargs):
         """
