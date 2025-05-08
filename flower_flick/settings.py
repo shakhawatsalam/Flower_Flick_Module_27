@@ -17,7 +17,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [".vercel.app", '127.0.0.1']
 
-CORS_ORIGIN_WHITELIST = [
+CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://flower-flick-client.vercel.app"
 ]
