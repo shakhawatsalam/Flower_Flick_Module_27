@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-y-cp7)hfn5d007u4(i)9q4@1uw_tk-@tmaz&1p2%#5)q+0o9qa'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = [".vercel.app", '127.0.0.1']
 ALLOWED_HOSTS = []
@@ -127,6 +127,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
 
 # Configuration for cloudinary storage
 cloudinary.config( 

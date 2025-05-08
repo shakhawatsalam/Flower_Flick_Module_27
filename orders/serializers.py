@@ -3,12 +3,13 @@ from .models import Cart, CartItem, Order, OrderItem
 from flowers.serializers import FlowerSerializer
 from flowers.models import Flower
 from orders.services  import OrderService
-
-
+from django.utils.timezone import localtime
+from flowers.serializers import FlowerImageSerializer
 class SimpleFlowerSerializer(serializers.ModelSerializer):
+    images = FlowerImageSerializer(many=True, read_only=True)
     class Meta:
         model = Flower
-        fields = ['id', 'title', 'price']
+        fields = ['id', 'title', 'price', 'images']
         
 
 class AddCartItemSerializer(serializers.ModelSerializer):
@@ -137,6 +138,10 @@ class UpdateOrderSerialier(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items =  OrderItemSerializer(many=True)
+    created_at = serializers.SerializerMethodField(method_name='get_formatted_created_at')
     class Meta:
         model = Order
         fields = ['id', 'user', 'status', 'total_price', 'created_at', 'items']
+        
+    def get_formatted_created_at(self, obj):
+        return localtime(obj.created_at).strftime("%B %d, %Y, %I:%M %p")
