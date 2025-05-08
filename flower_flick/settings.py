@@ -29,8 +29,8 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic",
     "corsheaders",
+    "whitenoise.runserver_nostatic",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
