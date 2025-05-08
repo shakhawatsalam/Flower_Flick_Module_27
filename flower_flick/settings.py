@@ -21,6 +21,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173",
     "https://flower-flick-client.vercel.app"
 ]
+CORS_ALLOW_CREDENTIALS = True
+
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
