@@ -10,11 +10,11 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 # Create your views here.
 
 class FlowerViewSet(ModelViewSet):
-    queryset = Flower.objects.all()
+    queryset = Flower.objects.all().order_by('id') 
     serializer_class = FlowerSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends=[DjangoFilterBackend, SearchFilter, OrderingFilter]
-    pagination_class=DefaultPagination
+    pagination_class= DefaultPagination
     filterset_class = ProductFilter
     search_fields = ['title', 'description']
     ordering_fields = ['price']
