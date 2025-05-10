@@ -16,16 +16,13 @@ SECRET_KEY = 'django-insecure-y-cp7)hfn5d007u4(i)9q4@1uw_tk-@tmaz&1p2%#5)q+0o9qa
 DEBUG = False
 
 ALLOWED_HOSTS = [".vercel.app", '127.0.0.1', "flower-flick-client.vercel.app", "flowerflick.vercel.app"]
-
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://flower-flick-client.vercel.app",
-    "https://flower-flick-client-git-main-shakhawatsalams-projects.vercel.app",
-    "https://flower-flick-client-2p2ypawgb-shakhawatsalams-projects.vercel.app",
-    "https://flowerflick.vercel.app"
 ]
 
-CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'users.User'
 
