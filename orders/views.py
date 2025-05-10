@@ -357,5 +357,5 @@ def payment_success(request):
     order.status = "Completed"
     order.save()
  
-    return redirect(f"{main_settings.FRONTEND_URL}/payment-success/")
+    return redirect(f"{main_settings.FRONTEND_URL}/payment-success")
     
