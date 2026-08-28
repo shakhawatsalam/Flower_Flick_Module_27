@@ -99,7 +99,6 @@ class CreateOrderSerializer(serializers.Serializer):
     def validate_cart_id(self, cart_id):
         if not Cart.objects.filter(pk=cart_id).exists():
             raise serializers.ValidationError("No Cart with this Id")
-
         if not CartItem.objects.filter(cart_id=cart_id).exists():
             raise serializers.ValidationError("Cart is Empty")
         return cart_id
@@ -107,15 +106,11 @@ class CreateOrderSerializer(serializers.Serializer):
     def create(self, validated_data):
         user_id = self.context['user_id']
         cart_id = validated_data['cart_id']
-
-        try:
-            order = OrderService.create_order(user_id=user_id, cart_id=cart_id)
-            return order
-        except ValueError as e:
-            raise serializers.ValidationError(str(e))
+        return OrderService.create_order(user_id=user_id, cart_id=cart_id)
 
     def to_representation(self, instance):
-        return OrderSerializer(instance).data
+        # Pass self.context so nested serializers (like flower images) resolve absolute URLs properly
+        return OrderSerializer(instance, context=self.context).data
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
