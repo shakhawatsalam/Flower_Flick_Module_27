@@ -141,7 +141,7 @@ class OrderSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField(method_name='get_formatted_created_at')
     class Meta:
         model = Order
-        fields = ['id', 'user', 'status', 'total_price', 'created_at', 'items']
+        fields = ['id', 'user', 'status', 'total_price', 'created_at']
         
     def get_formatted_created_at(self, obj):
         return localtime(obj.created_at).strftime("%B %d, %Y, %I:%M %p")
