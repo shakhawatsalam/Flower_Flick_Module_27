@@ -145,3 +145,7 @@ class OrderSerializer(serializers.ModelSerializer):
         
     def get_formatted_created_at(self, obj):
         return localtime(obj.created_at).strftime("%B %d, %Y, %I:%M %p")
+    
+    
+    
+    # fixing problem 
